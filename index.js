@@ -2,6 +2,24 @@ const { readFileSync } = require('fs');
 
 function gerarFaturaStr(fatura, pecas) {
 
+  //  NOVA FUNÇÃO DE CÁLCULO 
+  function calcularTotalFatura() {
+    let totalFatura = 0;
+    for (let apre of fatura.apresentacoes) {
+      totalFatura += calcularTotalApresentacao(apre);
+    }
+    return totalFatura;
+  }
+
+  //  NOVA FUNÇÃO DE CÁLCULO 
+  function calcularTotalCreditos() {
+    let creditos = 0;
+    for (let apre of fatura.apresentacoes) {
+      creditos += calcularCredito(apre);
+    }
+    return creditos;
+  }
+
   //Função extraída 1
   function calcularCredito(apre) {
     let creditos = 0;
@@ -47,27 +65,20 @@ function gerarFaturaStr(fatura, pecas) {
     return total;
   }
 
-
-  let totalFatura = 0;
-  let creditos = 0;
+  //DELETADA
+  //let totalFatura = 0;
+  //let creditos = 0;
   let faturaStr = `Fatura ${fatura.cliente}\n`;
 
 
   for (let apre of fatura.apresentacoes) {
-    // const peca = pecas[apre.id];
-    let total = calcularTotalApresentacao(apre);
-
-    // Chamada à nova função calcularCredito 
-    creditos += calcularCredito(apre);
-
-    // mais uma linha da fatura (usando formatarMoeda)
-    faturaStr += `  ${getPeca(apre).nome}: ${formatarMoeda(total)} (${apre.audiencia} assentos)\n`;
-    totalFatura += total;
+    // O loop agora só monta as linhas, sem acumular totais.
+    faturaStr += `  ${getPeca(apre).nome}: ${formatarMoeda(calcularTotalApresentacao(apre))} (${apre.audiencia} assentos)\n`;
   }
 
-  // Chamadas à função formatarMoeda 
-  faturaStr += `Valor total: ${formatarMoeda(totalFatura)}\n`;
-  faturaStr += `Créditos acumulados: ${creditos} \n`;
+  // As novas funções são chamadas diretamente aqui.
+  faturaStr += `Valor total: ${formatarMoeda(calcularTotalFatura())}\n`;
+  faturaStr += `Créditos acumulados: ${calcularTotalCreditos()} \n`;
   return faturaStr;
 }
 
